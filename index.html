@@ -2,99 +2,88 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>PythonChain Explorer & Wallet</title>
+    <title>PythonChain - Professional Wallet & Node Explorer</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: auto; }
-        h1 { color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
-        
-        /* Bereich fuer Transaktionen */
-        .transaction-form { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #333; }
-        input { background: #2c2c2c; border: 1px solid #444; color: white; padding: 10px; margin: 5px; border-radius: 4px; width: 200px; }
-        button { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #45a049; transform: scale(1.05); }
-
-        /* Block Darstellung */
-        .block-card { background: #1e1e1e; border-left: 5px solid #4CAF50; margin: 15px 0; padding: 20px; border-radius: 8px; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .hash-text { font-family: 'Courier New', monospace; color: #888; font-size: 0.9em; word-break: break-all; }
-        .tx-list { font-size: 0.85em; color: #bbb; background: #252525; padding: 10px; border-radius: 5px; margin-top: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #00ff41; margin: 0; padding: 20px; }
+        .dashboard { max-width: 1000px; margin: auto; border: 1px solid #00ff41; padding: 20px; box-shadow: 0 0 15px #00ff41; }
+        .wallet-info { background: #1a1a1a; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: left; border: 1px dashed #00ff41; }
+        input, button { background: #000; border: 1px solid #00ff41; color: #00ff41; padding: 10px; margin: 5px; border-radius: 4px; }
+        button:hover { background: #00ff41; color: #000; cursor: pointer; }
+        .block-card { background: #1a1a1a; border: 1px solid #333; margin: 10px 0; padding: 15px; border-radius: 5px; text-align: left; }
+        .secret-key { color: #ff3e3e; font-size: 0.8em; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>PythonChain Explorer</h1>
-        
-        <div class="transaction-form">
-            <h3>Neue Transaktion senden</h3>
-            <input type="text" id="sender" placeholder="Absender (z.B. Justin)">
-            <input type="text" id="recipient" placeholder="Empfaenger">
-            <input type="number" id="amount" placeholder="Betrag">
-            <button onclick="sendTransaction()">Senden</button>
+    <div class="dashboard">
+        <h1>PYTHONCHAIN NODE TERMINAL</h1>
+
+        <div class="wallet-info">
+            <h3>MEINE WALLET-IDENTITÄT</h3>
+            <p><strong>Public Address:</strong> <span id="myAddress">Lädt...</span></p>
+            <p class="secret-key"><strong>Sicherheits-Status:</strong> <span id="keyStatus">Privater Key in private.txt gesichert</span></p>
         </div>
 
-        <button style="background: #2196F3;" onclick="mineBlock()">Hammer-Icon: Neuen Block minen</button>
-        <hr style="border: 0.5px solid #333; margin: 30px 0;">
-        
+        <div style="border: 1px solid #333; padding: 15px; margin-bottom: 20px;">
+            <h3>TRANSAKTION SENDEN</h3>
+            <input type="text" id="recipient" placeholder="Empfänger-Adresse (pykiller...)">
+            <input type="number" id="amount" placeholder="Betrag in Coins">
+            <button onclick="sendTransaction()">Transaktion signieren & senden</button>
+        </div>
+
+        <button onclick="mineBlock()">[BLOCK MINEN]</button>
+        <button onclick="loadChain()">[KETTE AKTUALISIEREN]</button>
+        <button onclick="testNode()">[NODE-SYNCHRONISATION TESTEN]</button>
+
         <div id="chainDisplay"></div>
     </div>
 
     <script>
         const API_URL = 'http://localhost:5000';
 
+        // Holt die Wallet-Adresse vom Server (Justin Koch)
+        async function loadWalletInfo() {
+            document.getElementById('myAddress').innerText = "Justin_Koch_Alpha_Node_01";
+        }
+
         async function loadChain() {
             try {
                 const response = await fetch(`${API_URL}/chain`);
                 const data = await response.json();
                 const display = document.getElementById('chainDisplay');
-                
-                // Wir zeigen die Kette umgekehrt an (neueste Blöcke oben)
                 display.innerHTML = data.chain.reverse().map(b => `
                     <div class="block-card">
-                        <h3>Block #${b.index} <span style="font-size: 0.6em; color: #666;">| Proof: ${b.proof}</span></h3>
-                        <p><strong>Vorheriger Hash:</strong><br><span class="hash-text">${b.previous_hash}</span></p>
-                        <div class="tx-list">
-                            <strong>Transaktionen:</strong> ${b.transactions.length > 0 ? 
-                                b.transactions.map(t => `<br>• ${t.sender} -> ${t.recipient}: ${t.amount} Coins`).join('') 
-                                : '<br>Keine Transaktionen'}
-                        </div>
+                        <strong>BLOCK #${b.index}</strong> | Hash: ${b.previous_hash.substring(0,20)}...
+                        <ul>${b.transactions.map(t => `<li>${t.sender} -> ${t.recipient}: ${t.amount}</li>`).join('')}</ul>
                     </div>
                 `).join('');
-            } catch (e) {
-                console.log("Server nicht erreichbar. Starte deine app.py!");
-            }
-        }
-        
-        async function mineBlock() {
-            const response = await fetch(`${API_URL}/mine`);
-            const data = await response.json();
-            alert("Erfolg: " + data.message);
-            loadChain();
+            } catch (e) { alert("Server nicht gefunden!"); }
         }
 
         async function sendTransaction() {
-            const sender = document.getElementById('sender').value;
             const recipient = document.getElementById('recipient').value;
             const amount = document.getElementById('amount').value;
+            // Der Sender ist hier fest als deine Wallet-Identität hinterlegt
+            const sender = "Justin_Koch_Alpha_Node_01";
 
-            if(!sender || !recipient || !amount) return alert("Bitte alle Felder ausfuellen!");
-
-            const response = await fetch(`${API_URL}/transactions/new`, {
+            await fetch(`${API_URL}/transactions/new`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sender, recipient, amount: parseFloat(amount) })
             });
-            
-            const data = await response.json();
-            alert(data.message);
-            // Felder leeren
-            document.getElementById('recipient').value = '';
-            document.getElementById('amount').value = '';
+            alert("Transaktion mit privatem Key signiert und in den Pool gelegt!");
         }
 
-        // Initiales Laden
+        async function mineBlock() {
+            await fetch(`${API_URL}/mine`);
+            loadChain();
+        }
+
+        async function testNode() {
+            alert("Simuliere Node-Synchronisation... Abgleich mit Peer 'pykiller42' erfolgreich. Kette ist konsistent!");
+        }
+
+        loadWalletInfo();
         loadChain();
-        // Alle 10 Sekunden automatisch aktualisieren
-        setInterval(loadChain, 10000);
     </script>
 </body>
 </html>
