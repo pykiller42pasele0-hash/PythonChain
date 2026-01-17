@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PythonChain Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; text-align: center; }
+        .block-card { border: 1px solid #4CAF50; margin: 10px; padding: 15px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>PythonChain Explorer</h1>
+    <button onclick="mineBlock()">Neuen Block minen</button>
+    <div id="chainDisplay"></div>
+
+    <script>
+        async function loadChain() {
+            const response = await fetch('http://localhost:5000/chain');
+            const data = await response.json();
+            const display = document.getElementById('chainDisplay');
+            display.innerHTML = data.chain.map(b => `
+                <div class="block-card">
+                    <h3>Block #${b.index}</h3>
+                    <p>Hash: ${b.previous_hash}</p>
+                </div>
+            `).join('');
+        }
+        
+        async function mineBlock() {
+            await fetch('http://localhost:5000/mine');
+            loadChain();
+        }
+        loadChain();
+    </script>
+</body>
+</html>

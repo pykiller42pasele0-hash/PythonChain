@@ -1,0 +1,1 @@
+# Governance Modell\n- Dezentrale Mitbestimmung.\n- Profit durch Code-Beiträge.\n- Keine zentrale Instanz.
