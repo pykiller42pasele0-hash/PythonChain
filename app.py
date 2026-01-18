@@ -1,4 +1,4 @@
-ï»¿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import sys
 import io
 from flask import Flask, jsonify, request
@@ -88,10 +88,31 @@ def full_chain():
         'difficulty': blockchain.difficulty
     }), 200
 
+# Suchen diesen Teil in deiner app.py und ersetze ihn:
+
 if __name__ == '__main__':
-    # Starte den Netzwerk-Node in einem eigenen Thread
     import threading
-    threading.Thread(target=node.start_server, daemon=True).start()
     
-    # Starte das Web-Interface
+    # Intelligente Port-Suche für den Mesh-Node
+    def start_node_with_retry(node_instance, start_port):
+        current_port = start_port
+        while current_port < start_port + 10:
+            try:
+                node_instance.port = current_port
+                node_instance.start_server()
+                break
+            except Exception as e:
+                print(f"[!] Port {current_port} belegt oder blockiert. Versuche {current_port + 1}...")
+                current_port += 1
+
+    # Starte den Netzwerk-Node in einem eigenen Thread mit der neuen Logik
+    node_thread = threading.Thread(
+        target=start_node_with_retry, 
+        args=(node, 5001), 
+        daemon=True
+    )
+    node_thread.start()
+    
+    # Starte das Web-Interface (Port 5000 bleibt fest für dich)
+    print(f"[*] Dashboard bereit unter: http://localhost:5000")
     app.run(host='0.0.0.0', port=5000, debug=False)
