@@ -1,0 +1,28 @@
+/* PythonChain Visual Assets */
+@keyframes pulse-green {
+    0% { box-shadow: 0 0 5px #00ff41; }
+    50% { box-shadow: 0 0 20px #00ff41; }
+    100% { box-shadow: 0 0 5px #00ff41; }
+}
+
+.mining-active {
+    animation: pulse-green 2s infinite;
+    border-color: #00ff41 !important;
+}
+
+/* Terminal Log Farben */
+.log-info { color: #00ff41; }
+.log-warn { color: #ffcc00; }
+.log-err { color: #ff3e3e; }
+
+/* Dashboard Optimierung */
+#terminal::-webkit-scrollbar {
+    width: 6px;
+}
+#terminal::-webkit-scrollbar-thumb {
+    background: #222;
+    border-radius: 10px;
+}
+#terminal::-webkit-scrollbar-thumb:hover {
+    background: #00ff41;
+}

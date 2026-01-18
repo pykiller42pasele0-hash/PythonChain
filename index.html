@@ -5,74 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PythonChain | Sovereign Node Terminal</title>
     <style>
-        :root { --main-green: #00ff41; --dark-bg: #0a0a0a; --card-bg: #141414; }
-        body { font-family: 'Courier New', monospace; background: var(--dark-bg); color: var(--main-green); margin: 0; padding: 20px; line-height: 1.6; }
+        :root { --main-green: #00ff41; --dark-bg: #0a0a0a; --card-bg: #141414; --cmd-bg: #050505; }
+        body { font-family: 'Courier New', monospace; background: var(--dark-bg); color: var(--main-green); margin: 0; padding: 20px; }
         .dashboard { max-width: 1100px; margin: auto; border: 2px solid var(--main-green); padding: 30px; box-shadow: 0 0 25px rgba(0, 255, 65, 0.2); }
-        
-        .header { text-align: center; border-bottom: 2px solid var(--main-green); margin-bottom: 30px; padding-bottom: 10px; }
-        .header h1 { letter-spacing: 5px; text-transform: uppercase; margin: 0; }
-        
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        
-        .panel { background: var(--card-bg); border: 1px solid var(--main-green); padding: 20px; border-radius: 5px; }
+        .panel { background: var(--card-bg); border: 1px solid var(--main-green); padding: 20px; border-radius: 5px; margin-bottom: 20px; }
         .wallet-info { grid-column: span 2; }
         
+        /* PCCMD Terminal Style */
+        .terminal-area { background: var(--cmd-bg); border: 1px solid #555; padding: 10px; height: 250px; overflow-y: auto; font-size: 0.85em; color: #00ff41; margin-bottom: 10px; }
+        .cmd-input-container { display: flex; border: 1px solid var(--main-green); background: #000; }
+        .cmd-prefix { padding: 10px; color: #00ff41; font-weight: bold; }
+        #cmd-input { background: transparent; border: none; color: white; padding: 10px; flex-grow: 1; outline: none; font-family: inherit; }
+        
         .status-badge { display: inline-block; padding: 5px 15px; border-radius: 3px; font-weight: bold; background: #003300; border: 1px solid var(--main-green); }
-        .mining { animation: blink 1s infinite; color: #ff3e3e; border-color: #ff3e3e; }
-        
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        input, button { width: 90%; background: #000; border: 1px solid var(--main-green); color: var(--main-green); padding: 12px; margin: 10px 0; font-family: inherit; }
-        button { cursor: pointer; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
-        button:hover { background: var(--main-green); color: #000; box-shadow: 0 0 15px var(--main-green); }
-        
-        .block-card { border-left: 4px solid var(--main-green); background: #1a1a1a; margin: 15px 0; padding: 15px; font-size: 0.9em; }
-        .hash-text { color: #888; font-size: 0.8em; word-break: break-all; }
-        .energy-value { color: #00ccff; font-weight: bold; }
-
-        #chainDisplay { max-height: 500px; overflow-y: auto; margin-top: 20px; padding-right: 10px; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: var(--main-green); }
+        button { background: #000; border: 1px solid var(--main-green); color: var(--main-green); padding: 12px; cursor: pointer; text-transform: uppercase; font-weight: bold; width: 100%; margin-top: 10px; }
+        button:hover { background: var(--main-green); color: #000; }
+        input { width: 95%; background: #000; border: 1px solid #333; color: white; padding: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
-    <div class="header">
+    <div class="header" style="text-align: center; border-bottom: 2px solid var(--main-green); margin-bottom: 20px;">
         <h1>PythonChain Full-Node</h1>
-        <p>Domain: <span id="domain-name">pykiller42-loading...</span></p>
-        <div id="node-status" class="status-badge">INITIALISIERUNG...</div>
+        <p>Domain: <span id="domain-name">pykiller42.io</span></p>
+        <div id="node-status" class="status-badge">ONLINE</div>
     </div>
 
     <div class="grid">
         <div class="panel wallet-info">
-            <h3>MASTER-IDENTITÄT (Sovereign Address)</h3>
-            <p><strong>ADDR:</strong> <span id="wallet-address" style="color: white;">Abfrage läuft...</span></p>
-            <p><strong>PROVIDER-STATUS:</strong> <span style="color: #ffcc00;">Autonomer Funk-Host aktiv</span></p>
+            <h3>MASTER-IDENTIT&Auml;T (Sovereign Address)</h3>
+            <p><strong>ADDR:</strong> <span id="wallet-address" style="color: white;">1LH6W1qEzcK3sMSjieS5XaHMejYfMc3vGf</span></p>
+            <p><strong>STATUS:</strong> <span style="color: #ffcc00;">Autonomer Funk-Host aktiv</span></p>
         </div>
 
         <div class="panel">
             <h3>NODE-KONTROLLE</h3>
-            <div id="hashrate-display" style="font-size: 1.5em; margin: 10px 0;">0.00 H/s</div>
-            <button onclick="startMining()" id="mineBtn">[Energy Mining starten]</button>
+            <div id="hashrate-display" style="font-size: 1.5em;">0.00 H/s</div>
+            <button onclick="startMining()">[Energy Mining starten]</button>
             <button onclick="refreshUI()">[Netzwerk synchronisieren]</button>
         </div>
 
         <div class="panel">
-            <h3>TRANSAKTION SENDEN</h3>
-            <input type="text" id="recipient" placeholder="Ziel-Adresse (1...)">
-            <input type="number" id="amount" step="0.00001" placeholder="Betrag (PC-Coins)">
+            <h3>TRANSAKTION</h3>
+            <input type="text" id="recipient" placeholder="Ziel-Adresse">
+            <input type="number" id="amount" placeholder="Betrag">
             <button onclick="sendTransaction()">Signieren & Broadcasten</button>
         </div>
     </div>
 
-    <div class="panel" style="margin-top: 20px;">
-        <h3>BLOCKCHAIN EXPLORER (Blocks: <span id="block-count">0</span>)</h3>
-        <div id="chain-display"></div>
+    <div class="panel">
+        <h3>BLOCKCHAIN EXPLORER</h3>
+        <div id="chain-display" style="max-height: 150px; overflow-y: auto;"></div>
+    </div>
+
+    <div class="panel">
+        <h3>PCCMD Terminal (Live Logs & Python Exec)</h3>
+        <div id="terminal" class="terminal-area">
+            <div>[SYSTEM] PythonChain Kernel v1.0.42 geladen...</div>
+            <div>[SYSTEM] Verbinde zu Peer pykiller42... bereit.</div>
+        </div>
+        <div class="cmd-input-container">
+            <span class="cmd-prefix">pykiller42@node:~#</span>
+            <input type="text" id="cmd-input" placeholder="Python Code oder Befehl eingeben..." onkeypress="handleCMD(event)">
+        </div>
     </div>
 </div>
 
 <script src="app.js"></script>
-
+<script>
+    function handleCMD(e) {
+        if (e.key === 'Enter') {
+            const cmd = document.getElementById('cmd-input').value;
+            logToTerminal(`> ${cmd}`);
+            // Hier wird der Befehl an das Backend gesendet
+            executePython(cmd);
+            document.getElementById('cmd-input').value = '';
+        }
+    }
+    function logToTerminal(msg) {
+        const term = document.getElementById('terminal');
+        const div = document.createElement('div');
+        div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        term.appendChild(div);
+        term.scrollTop = term.scrollHeight;
+    }
+</script>
 </body>
 </html>
