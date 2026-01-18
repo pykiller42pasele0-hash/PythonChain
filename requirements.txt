@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 ecdsa
 flask
-requests
 flask-cors
+base58
+requests

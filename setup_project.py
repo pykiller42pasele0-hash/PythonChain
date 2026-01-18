@@ -12,10 +12,10 @@ folders = [
 
 files = {
     "README.md": """# ⛓️ PythonChain
-**Die erste echte dezentrale Python-Blockchain für Entwickler.**
+**Die erste echte dezentrale Python-Blockchain fuer Entwickler.**
 
 ## 🚀 Vision: Devs for Devs
-PythonChain ist eine unabhängige Infrastruktur. Entwickler bauen hier eigene Ökosysteme, verdienen durch dApps und betreiben das Netzwerk selbst – ohne Cloud-Anbieter oder Konzerne.
+PythonChain ist eine unabhaengige Infrastruktur. Entwickler bauen hier eigene oekosysteme, verdienen durch dApps und betreiben das Netzwerk selbst – ohne Cloud-Anbieter oder Konzerne.
 
 ## 📁 Struktur
 - `core/`: Blockchain-Logik & Mining
@@ -27,11 +27,11 @@ PythonChain ist eine unabhängige Infrastruktur. Entwickler bauen hier eigene Ö
 1. `pip install ecdsa flask`
 2. `python core/blockchain.py`
 """,
-    "GOVERNANCE.md": "# Governance Modell\\n- Dezentrale Mitbestimmung.\\n- Profit durch Code-Beiträge.\\n- Keine zentrale Instanz.",
+    "GOVERNANCE.md": "# Governance Modell\\n- Dezentrale Mitbestimmung.\\n- Profit durch Code-Beitraege.\\n- Keine zentrale Instanz.",
     "requirements.txt": "ecdsa\\nflask\\nrequests",
-    "wallet/wallet.py": "# Wallet Logik hier einfügen",
-    "core/blockchain.py": "# Blockchain Core hier einfügen",
-    "network/node.py": "# P2P Socket Logik hier einfügen",
+    "wallet/wallet.py": "# Wallet Logik hier einfuegen",
+    "core/blockchain.py": "# Blockchain Core hier einfuegen",
+    "network/node.py": "# P2P Socket Logik hier einfuegen",
     "frontend/index.html": ""
 }
 
