@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ï»¿# -*- coding: utf-8 -*-
 import sys
 import io
 import os
@@ -48,7 +48,7 @@ try:
     else:
         print("[!] C++ Bridge nicht gefunden. Nutze stabilen Python-Kern.")
 except Exception:
-    print("[!] Nutze Python-Standard für Berechnungen.")
+    print("[!] Nutze Python-Standard fï¿½r Berechnungen.")
 
 # --- API ENDPUNKTE ---
 
@@ -102,17 +102,17 @@ def new_transaction():
 
 @app.route('/api/terminal/execute', methods=['POST'])
 def terminal_execute():
-    """Endpunkt für das Web-Terminal"""
+    """Endpunkt fuer das Web-Terminal"""
     data = request.get_json()
     command = data.get('command')
-    # Führt den Befehl über die api_extension aus
+    # Fuehrt den Befehl ueber die api_extension aus
     response = get_terminal_response(command, blockchain)
     return jsonify({'output': response}), 200
 
 # --- START-LOGIK ---
 
 if __name__ == '__main__':
-    # Intelligente Port-Suche für den Mesh-Node (Resilienz-Funktion)
+    # Intelligente Port-Suche fuer den Mesh-Node (Resilienz-Funktion)
     def start_node_with_retry(node_instance, start_port):
         current_port = start_port
         while current_port < start_port + 10:

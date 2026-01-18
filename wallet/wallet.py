@@ -69,3 +69,4 @@ class Wallet:
             "address": self.address,
             "domain": f"PythonChain@pykiller42-{self.address[:8]}"
         }
+

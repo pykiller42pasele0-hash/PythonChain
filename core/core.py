@@ -57,3 +57,4 @@ class MiningEngine:
         difficulty_multiplier = 2 ** self.blockchain.difficulty
         # Je schwerer das Raetsel, desto hoeher der energetische Wert
         return base_value * difficulty_multiplier
+

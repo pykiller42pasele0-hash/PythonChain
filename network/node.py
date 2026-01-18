@@ -81,3 +81,4 @@ class PythonChainNode:
         self.peers.add((host, port))
         # Sofortige Vorstellung beim neuen Peer
         self.broadcast_data('PEER_DISCOVERY', {'node_address': (self.host, self.port)})
+

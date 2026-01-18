@@ -74,3 +74,4 @@ class PythonChain:
         """Autonome Datensicherung"""
         with open('blockchain_data.json', 'w') as f:
             json.dump(self.chain, f, indent=4)
+
