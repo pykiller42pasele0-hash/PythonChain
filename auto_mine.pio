@@ -1,0 +1,14 @@
+# auto_mine.pio - Master Control Script
+import time
+
+print("--- STARTING MASTER AUTO-MINE ---")
+for i in range(3):
+    print(f"Mining Block {i+1}...")
+    # Ruft die interne Mining-Funktion deiner Node auf
+    result = miner.proof_of_work(blockchain.last_block)
+    if result:
+        blockchain.new_transaction(sender="0", recipient=my_identity['address'], amount=50)
+        blockchain.new_block(result)
+        print(f"Block {i+1} erfolgreich versiegelt!")
+    time.sleep(1)
+print("--- TASK COMPLETED ---")
