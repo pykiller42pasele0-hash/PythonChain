@@ -76,4 +76,4 @@ if __name__ == '__main__':
 
     threading.Thread(target=start_node, args=(node,), daemon=True).start()
     print(f"[*] PythonChain Dashboard: http://pykiller42.io:5000")
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, ssl_context='adhoc')
