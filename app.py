@@ -36,12 +36,11 @@ node = PythonChainNode(host='0.0.0.0', port=5001, wallet_address=my_identity['ad
 
 # --- AUTONOMER MATHEMATISCHER CORE (DAEMON) ---
 def autonomous_heartbeat():
-    """Der autonome Prozess: Mined Blöcke ohne Ladezeit durch deterministische Mathematik"""
+    """Der autonome Prozess: Mined Blöcke deterministisch im Hintergrund"""
     print(f"[*] WWPC Autonomous Core aktiv. Master: {my_identity['address']}")
     while True:
         try:
             last_block = blockchain.last_block
-            # Probabilistisches Mining im Hintergrund
             proof = miner.proof_of_work(last_block)
             
             if proof:
@@ -52,44 +51,41 @@ def autonomous_heartbeat():
                 )
                 block = blockchain.new_block(proof)
                 node.broadcast_data('NEW_BLOCK', block)
-                print(f"[MATHEMATIK] Autonomer Block {block['index']} versiegelt (Resonanz 0ms)")
+                print(f"[MATHEMATIK] Block {block['index']} autonom versiegelt.")
         except Exception as e:
-            print(f"[!] Core Heartbeat Fehler: {e}")
-        
-        time.sleep(1) # Taktung der Resonanz
+            print(f"[!] Core Fehler: {e}")
+        time.sleep(1)
 
-# --- MIDDLEWARE: DOMAIN & HTTPS ENFORCEMENT ---
+# --- MIDDLEWARE: HTTPS & DOMAIN ENFORCEMENT ---
 @app.before_request
-def enforce_sovereign_protocol():
-    # Erzwingt HTTPS und checkt Domain-Konsistenz (.io / .pio)
-    if not request.is_secure and 'localhost' not in request.host:
+def handle_ssl_and_host():
+    # Leitet HTTP auf HTTPS um (Wichtig für GitHub Pages & Browser-Sicherheit)
+    if not request.is_secure and 'localhost' not in request.host and '127.0.0.1' not in request.host:
         url = request.url.replace('http://', 'https://', 1)
         return redirect(url, code=301)
 
 @app.after_request
-def apply_security_headers(response):
-    # HSTS für Zero-Latency SSL Resonanz
+def set_secure_headers(response):
+    # HSTS und WWPC-Protokoll Header
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    response.headers["X-World-Wide-PythonChain"] = "Sovereign-Node-v1.0"
+    response.headers["X-Protocol"] = "PythonChain-Sovereign-PIO"
     return response
 
 # --- API ROUTEN ---
 
 @app.route('/')
 def index():
-    """Liefert die dApp Oberfläche"""
     return render_template('index.html')
 
 @app.route('/mine', methods=['GET'])
 def manual_mine():
-    """Manueller Mining-Trigger (für das Dashboard UI)"""
     last_block = blockchain.last_block
     proof = miner.proof_of_work(last_block)
     if proof:
         blockchain.new_transaction(sender="0", recipient=my_identity['address'], amount=miner.calculate_coin_value())
         block = blockchain.new_block(proof)
         return jsonify({'status': 'success', 'block': block}), 200
-    return jsonify({'status': 'error', 'message': 'Mining abgebrochen'}), 400
+    return jsonify({'status': 'error'}), 400
 
 @app.route('/api/terminal/execute', methods=['POST'])
 def terminal_execute():
@@ -102,15 +98,10 @@ def wallet_info(): return jsonify(my_identity), 200
 
 @app.route('/chain', methods=['GET'])
 def full_chain(): 
-    return jsonify({
-        'chain': blockchain.chain, 
-        'length': len(blockchain.chain),
-        'master_node': my_identity['address']
-    }), 200
+    return jsonify({'chain': blockchain.chain, 'length': len(blockchain.chain)}), 200
 
 # --- SYSTEM START ---
 if __name__ == '__main__':
-    # 1. Netzwerk-Node Start (Mesh-Funktion)
     def start_node_service(node_instance):
         for port in range(5001, 5010):
             try:
@@ -119,16 +110,11 @@ if __name__ == '__main__':
                 break
             except: continue
 
-    # Starte autonomen Mining-Thread (Der Sklaven-Prozess der Hardware)
-    core_thread = threading.Thread(target=autonomous_heartbeat, daemon=True)
-    core_thread.start()
-
-    # Starte Netzwerk-Thread
-    node_thread = threading.Thread(target=start_node_service, args=(node,), daemon=True)
-    node_thread.start()
+    # Start der autonomen Threads
+    threading.Thread(target=autonomous_heartbeat, daemon=True).start()
+    threading.Thread(target=start_node_service, args=(node,), daemon=True).start()
     
-    print(f"[*] PythonChain Dashboard: https://pykiller42.io:5000")
-    print(f"[*] Autonomes Mining läuft im Hintergrund...")
+    print(f"[*] PythonChain LIVE: https://pykiller42.io:5000")
     
-    # Flask Start mit SSL-Context für verschlüsselte dApp-Kommunikation
+    # Start mit SSL für HTTPS-Resonanz
     app.run(host='0.0.0.0', port=5000, debug=False, ssl_context='adhoc')
