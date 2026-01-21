@@ -130,5 +130,5 @@ if __name__ == '__main__':
     print(f"[*] PythonChain Dashboard: https://pykiller42.io:5000")
     print(f"[*] Autonomous Mining running in background...")
     
-    # Start Flask with SSL-Context for encrypted dApp communication
-    app.run(host='0.0.0.0', port=5000, debug=False, ssl_context='adhoc')
+    # Start Flask with http-https-Context for encrypted dApp communication
+    app.run(host='0.0.0.0', port=8080, debug=False)
