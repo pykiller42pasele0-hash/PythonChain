@@ -104,6 +104,7 @@ def full_chain():
         'master_node': my_identity['address']
     }), 200
 
+
 # --- SYSTEM START ---
 if __name__ == '__main__':
     def start_node_service(node_instance):
@@ -123,5 +124,5 @@ if __name__ == '__main__':
     print(f"[*] PythonChain Dashboard: https://pykiller42.io:5000")
     print(f"[*] Autonomous Mining running in background...")
     
-    # KORREKTUR: ZURÜCK AUF PORT 5000 MIT SSL
+    # KORREKTUR: Muss eingerückt sein und nutzt 0.0.0.0 für stabilere IPv4 Bindung
     app.run(host='0.0.0.0', port=5000, debug=False, ssl_context='adhoc')
