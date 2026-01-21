@@ -19,7 +19,7 @@ try:
 except ImportError:
     def get_terminal_response(cmd, bc): return "Backend Extension not found."
 
-# UTF-8 Fix for Windows console resonance
+# UTF-8 Fix for Windows console
 if sys.stdout.encoding != 'utf-8':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
@@ -41,7 +41,6 @@ def autonomous_heartbeat():
     while True:
         try:
             last_block = blockchain.last_block
-            # Probabilistic mining in background
             proof = miner.proof_of_work(last_block)
             
             if proof:
@@ -56,19 +55,18 @@ def autonomous_heartbeat():
         except Exception as e:
             print(f"[!] Core Heartbeat Error: {e}")
         
-        time.sleep(1) # Resonance timing
+        time.sleep(1)
 
-# --- MIDDLEWARE: DOMAIN & HTTPS ENFORCEMENT ---
+# --- MIDDLEWARE: HTTPS ENFORCEMENT ---
 @app.before_request
 def enforce_sovereign_protocol():
-    # Enforce HTTPS and check domain consistency (.io / .pio)
-    if not request.is_secure and 'localhost' not in request.host:
+    # Force redirect to HTTPS if not local
+    if not request.is_secure and 'localhost' not in request.host and '127.0.0.1' not in request.host:
         url = request.url.replace('http://', 'https://', 1)
         return redirect(url, code=301)
 
 @app.after_request
 def apply_security_headers(response):
-    # HSTS for Zero-Latency SSL resonance
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["X-World-Wide-PythonChain"] = "Sovereign-Node-v1.0"
     return response
@@ -77,12 +75,10 @@ def apply_security_headers(response):
 
 @app.route('/')
 def index():
-    """Renders the dApp Dashboard"""
     return render_template('index.html')
 
 @app.route('/mine', methods=['GET'])
 def manual_mine():
-    """Manual mining trigger for Dashboard UI"""
     last_block = blockchain.last_block
     proof = miner.proof_of_work(last_block)
     if proof:
@@ -110,7 +106,6 @@ def full_chain():
 
 # --- SYSTEM START ---
 if __name__ == '__main__':
-    # 1. Network Node Service (Mesh Function)
     def start_node_service(node_instance):
         for port in range(5001, 5010):
             try:
@@ -119,16 +114,14 @@ if __name__ == '__main__':
                 break
             except: continue
 
-    # Start autonomous mining thread (Hardware slave process)
     core_thread = threading.Thread(target=autonomous_heartbeat, daemon=True)
     core_thread.start()
 
-    # Start network thread
     node_thread = threading.Thread(target=start_node_service, args=(node,), daemon=True)
     node_thread.start()
     
     print(f"[*] PythonChain Dashboard: https://pykiller42.io:5000")
     print(f"[*] Autonomous Mining running in background...")
     
-    # Start Flask with http-https-Context for encrypted dApp communication
-    app.run(host='0.0.0.0', port=8080, debug=False)
+    # KORREKTUR: ZURÜCK AUF PORT 5000 MIT SSL
+    app.run(host='0.0.0.0', port=5000, debug=False, ssl_context='adhoc')
